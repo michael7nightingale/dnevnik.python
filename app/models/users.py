@@ -8,6 +8,8 @@ import random
 from typing import Optional
 
 from .base import TortoiseModel
+from .schools import School
+from .classes import StudyGroup
 from app.services.passwords import verify_password, hash_password
 
 
@@ -67,6 +69,7 @@ class User(TortoiseModel):
         if password is None:
             password = generate_password()
         try:
+            print(first_name, last_name, father_name, username, email, password, type)
             new_user = await cls.create(
                 first_name=first_name,
                 last_name=last_name,
@@ -84,6 +87,8 @@ class User(TortoiseModel):
 class UserTypeModel(TortoiseModel):
     type: str
     user = fields.OneToOneField("models.User")
+    school = fields.ForeignKeyField("models.School")
+    is_administrator = fields.BooleanField(default=False)
 
     @classmethod
     async def create(cls, **kwargs) -> Optional["UserTypeModel"]:
@@ -91,7 +96,23 @@ class UserTypeModel(TortoiseModel):
             user = await User.register(type=cls.type, **kwargs)
             if user is None:
                 return
-            return await super().create(**kwargs, user=user)    # type: ignore
+            return await super().create(**kwargs, user=user, school=(await School.first()), study_group=(await StudyGroup.first()))    # type: ignore
+
+    @classmethod
+    async def get_or_none(cls, *args, **kwargs) -> Optional["UserTypeModel"]:
+        return await (
+            super()
+            .get_or_none(*args, **kwargs)
+            .select_related("user", "school")
+        )
+
+    @classmethod
+    async def filter(cls, *args, **kwargs) -> list["UserTypeModel"]:
+        return await (
+            super()
+            .filter(*args, **kwargs)
+            .select_related("user", "school")
+        )
 
     class Meta:
         abstract = True
@@ -100,11 +121,17 @@ class UserTypeModel(TortoiseModel):
 class Teacher(UserTypeModel):
     type = "teacher"
     user = fields.OneToOneField("models.User", "teacher")
+    school = fields.ForeignKeyField("models.School", "teachers")
 
 
 class Pupil(UserTypeModel):
     type = "pupil"
     user = fields.OneToOneField("models.User", "pupil")
+    school = fields.ForeignKeyField("models.School", "pupils")
+    study_group = fields.ForeignKeyField("models.StudyGroup", "pupils")
+
+    async def get_study_group(self) -> StudyGroup:
+        return await StudyGroup.get(id=self.study_group_id)
 
 
 class UserTypesEnum(StrEnum):
@@ -116,6 +143,8 @@ class UserTypesEnum(StrEnum):
 class Administrator(UserTypeModel):
     type = "administrator"
     user = fields.OneToOneField("models.User", "administrator")
+    school = fields.ForeignKeyField("models.School", "administrators")
+    is_administrator = fields.BooleanField(default=True)
 
 
 user_types_matching = {

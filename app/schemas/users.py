@@ -9,7 +9,7 @@ class UserRole(BaseModel):
     name: str
 
 
-class BaseUserSchema(BaseModel):
+class BaseUserScheme(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
@@ -18,16 +18,16 @@ class BaseUserSchema(BaseModel):
     type: UserTypesEnum
 
 
-class UserSchema(BaseUserSchema):
+class UserScheme(BaseUserScheme):
     id: str
 
 
-class TypedUserSchema(BaseModel):
+class TypedUserScheme(BaseModel):
     id: str
-    user: UserSchema
+    user: UserScheme
 
 
-class LoginUserSchema(BaseModel):
+class LoginUserScheme(BaseModel):
     login: str
     username: str | None = None
     password: str
@@ -40,21 +40,22 @@ class LoginUserSchema(BaseModel):
             self.username = self.login
 
 
-class RegisterUserSchema(BaseUserSchema):
+class RegisterUserScheme(BaseUserScheme):
     password: str
 
 
-class UpdateUserSchema(BaseModel):
+class UpdateUserScheme(BaseModel):
     email: EmailStr | None = None
-    first_name: str
-    last_name: str
-    father_name: str
-    password: str | None = None
+    username: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    father_name: str | None = None
 
 
-class TeacherSchema(BaseModel):
-    user: UserSchema
+class TeacherScheme(BaseModel):
+    user: UserScheme
 
 
-class PupilSchema(BaseUserSchema):
-    user: UserSchema
+class PupilScheme(BaseModel):
+    id: str
+    user: UserScheme
