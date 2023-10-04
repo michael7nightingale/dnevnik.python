@@ -5,7 +5,6 @@ export function setUser(token){
     meUser().then(response => {
         localStorage.userData = JSON.stringify(response.data);
         console.log(123123123123, localStorage.userData)
-        console.log(getUser())
     })
 
 

@@ -26,6 +26,7 @@ export default {
         login: this.login,
         password: this.password
       }
+      console.log(123)
       console.log(2222222, localStorage.userData)
       loginUser(data)
           .then((response) => {
