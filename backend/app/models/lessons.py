@@ -1,12 +1,14 @@
+import datetime
+
 from tortoise import fields
 
 from .base import TortoiseModel
 
 
 class Lesson(TortoiseModel):
-    date = fields.DateField()
-    start_at = fields.TimeField()
-    finish_at = fields.TimeField()
+    date = fields.DateField(default=lambda: datetime.datetime.now().date(), null=True)
+    start_at = fields.TimeField(default=lambda: datetime.datetime.now().time(), null=True)
+    finish_at = fields.TimeField(default=lambda: datetime.datetime.now().time(), null=True)
     study_group = fields.ForeignKeyField("models.StudyGroup", "lessons")
     teacher = fields.ForeignKeyField("models.Teacher", "lessons")
     science = fields.CharField(max_length=255)
@@ -18,7 +20,7 @@ class Lesson(TortoiseModel):
         return await (
             super()
             .filter(*args, **kwargs)
-            .select_related("teacher")
+            .select_related("teacher", "teacher__user")
         )
 
 

@@ -169,6 +169,8 @@ class Pupil(UserTypeModel):
             from_date: datetime.date | None = None,
             to_date: datetime.date | None = None
     ) -> list[Lesson]:
+        if from_date is None and to_date is None:
+            return await Lesson.filter(study_group_id=self.study_group_id)
         if from_date is not None and to_date is not None:
             args = Q(date__gte=from_date) | Q(date__lte=to_date)
         else:
@@ -176,6 +178,22 @@ class Pupil(UserTypeModel):
         return await Lesson.filter(
             args,
             study_group_id=self.study_group_id,
+        )
+
+    async def get_marks(
+            self,
+            from_date: datetime.date | None = None,
+            to_date: datetime.date | None = None
+    ) -> list[Mark]:
+        if from_date is None and to_date is None:
+            return await Mark.filter(pupil=self)
+        if from_date is not None and to_date is not None:
+            args = Q(lesson__date__gte=from_date) | Q(lesson__date__lte=to_date)
+        else:
+            args = Q(lesson__date__gte=from_date) if from_date is not None else Q(lesson__date__lte=to_date)
+        return await Mark.filter(
+            args,
+            pupil=self,
         )
 
 
