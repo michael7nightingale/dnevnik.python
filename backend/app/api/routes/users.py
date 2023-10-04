@@ -7,7 +7,7 @@ from app.services.jwt import encode_jwt_token
 from app.api.permissions.users import login_required
 
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/auth")
 
 
 @router.post("/register", response_model=TypedUserScheme)

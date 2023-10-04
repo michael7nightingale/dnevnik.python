@@ -1,12 +1,15 @@
 from tortoise import fields
+from tortoise.expressions import Q
 from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
 
 from uuid import uuid4
+import datetime
 from enum import StrEnum, auto
 import random
 from typing import Optional
 
+from .lessons import Lesson, Mark
 from .base import TortoiseModel
 from .schools import School
 from .classes import StudyGroup
@@ -123,6 +126,34 @@ class Teacher(UserTypeModel):
     user = fields.OneToOneField("models.User", "teacher")
     school = fields.ForeignKeyField("models.School", "teachers")
 
+    async def get_lessons(
+            self,
+            from_date: datetime.date | None = None,
+            to_date: datetime.date | None = None
+    ) -> list[Lesson]:
+        if from_date is not None and to_date is not None:
+            args = Q(date__gte=from_date) | Q(date__lte=to_date)
+        else:
+            args = Q(date__gte=from_date) if from_date is not None else Q(date__lte=to_date)
+        return await Lesson.filter(
+            args,
+            teacher=self
+        )
+
+    async def get_marks(
+            self,
+            from_date: datetime.date | None = None,
+            to_date: datetime.date | None = None
+    ) -> list[Mark]:
+        if from_date is not None and to_date is not None:
+            args = Q(lesson__date__gte=from_date) | Q(lesson__date__lte=to_date)
+        else:
+            args = Q(lesson__date__gte=from_date) if from_date is not None else Q(lesson__date__lte=to_date)
+        return await Mark.filter(
+            args,
+            teacher=self
+        )
+
 
 class Pupil(UserTypeModel):
     type = "pupil"
@@ -132,6 +163,20 @@ class Pupil(UserTypeModel):
 
     async def get_study_group(self) -> StudyGroup:
         return await StudyGroup.get(id=self.study_group_id)
+
+    async def get_lessons(
+            self,
+            from_date: datetime.date | None = None,
+            to_date: datetime.date | None = None
+    ) -> list[Lesson]:
+        if from_date is not None and to_date is not None:
+            args = Q(date__gte=from_date) | Q(date__lte=to_date)
+        else:
+            args = Q(date__gte=from_date) if from_date is not None else Q(date__lte=to_date)
+        return await Lesson.filter(
+            args,
+            study_group_id=self.study_group_id,
+        )
 
 
 class UserTypesEnum(StrEnum):

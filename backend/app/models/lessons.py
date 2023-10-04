@@ -3,17 +3,8 @@ from tortoise import fields
 from .base import TortoiseModel
 
 
-class StudyWeek(TortoiseModel):
-    pass
-
-
-class StudyDay(TortoiseModel):
-    day = fields.CharField(max_length=20)
-    study_week = fields.ForeignKeyField("models.StudyWeek", "study_days")
-    is_weekend = fields.BooleanField(default=False)
-
-
 class Lesson(TortoiseModel):
+    date = fields.DateField()
     start_at = fields.TimeField()
     finish_at = fields.TimeField()
     study_group = fields.ForeignKeyField("models.StudyGroup", "lessons")
@@ -21,6 +12,14 @@ class Lesson(TortoiseModel):
     science = fields.CharField(max_length=255)
     theme = fields.CharField(max_length=255)
     homework = fields.TextField(null=True)
+
+    @classmethod
+    async def filter(cls, *args, **kwargs) -> list["Lesson"]:
+        return await (
+            super()
+            .filter(*args, **kwargs)
+            .select_related("teacher")
+        )
 
 
 class Mark(TortoiseModel):
@@ -30,3 +29,11 @@ class Mark(TortoiseModel):
     is_ill = fields.BooleanField(default=False)
     is_absent = fields.BooleanField(default=False)
     is_skipped = fields.BooleanField(default=False)
+
+    @classmethod
+    async def filter(cls, *args, **kwargs) -> list["Mark"]:
+        return await (
+            super()
+            .filter(*args, **kwargs)
+            .select_related("lesson")
+        )

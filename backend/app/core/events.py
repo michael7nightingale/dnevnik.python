@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from tortoise.contrib.fastapi import register_tortoise
 
 from app.api.routes import routers
@@ -47,3 +48,14 @@ def use_authentication_middleware(app: FastAPI):
 
 def use_production_settings() -> None:
     BaseAppSettings.app_env = AppEnvTypes.prod
+
+
+def add_cors_middleware(app: FastAPI) -> None:
+    origins = ['*']
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
