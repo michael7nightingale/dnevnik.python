@@ -3,10 +3,10 @@ import {buildUrl} from "@/services/Base";
 import {getHeaders} from "@/services/Auth";
 
 
-export function getMarks(){
+export function getMySchool(){
     return axios
         .get(
-            buildUrl("lessons/marks"),
+            buildUrl("schools/my-school"),
         {
             headers: getHeaders()
              }
