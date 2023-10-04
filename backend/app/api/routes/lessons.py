@@ -2,13 +2,14 @@ from fastapi import APIRouter, Request, Query, Body, Depends
 import datetime
 
 from app.schemas.lessons import (
-    LessonUpdateScheme, LessonFullScheme ,
-    MarkCreateScheme, MarkUpdateScheme,
+    LessonUpdateScheme, LessonFullScheme,
+    MarkFullScheme, MarkCreateScheme, MarkUpdateScheme,
 
 )
 from app.api.permissions.users import is_pupil_permission, is_teacher_permission
 from app.api.dependencies.lessons import get_mark, get_lesson
 from app.models import Mark, Lesson
+
 
 router = APIRouter(prefix="/lessons")
 
@@ -20,6 +21,7 @@ async def get_my_lessons(
         from_date: datetime.date | None = Query(required=False, default=None),
         to_date: datetime.date | None = Query(required=False, default=None)
 ):
+    print(await request.user.get_lessons(from_date, to_date))
     return await request.user.get_lessons(from_date, to_date)
 
 
@@ -54,7 +56,7 @@ async def update_lesson(
     return lesson
 
 
-@router.get("/marks")
+@router.get("/marks", response_model=list[MarkFullScheme])
 @is_pupil_permission
 async def get_my_marks(
         request: Request,

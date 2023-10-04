@@ -5,7 +5,7 @@ from app.schemas.users import TeacherScheme
 
 
 class BaseLessonScheme(BaseModel):
-    date: datetime.date
+    date: datetime.date | None = None
     science: str
     theme: str
 
@@ -15,11 +15,11 @@ class LessonScheme(BaseLessonScheme):
 
 
 class LessonFullScheme(BaseLessonScheme):
-    start_at: datetime.time
-    finish_at: datetime.time
+    start_at: datetime.time | None = None
+    finish_at: datetime.time | None = None
     study_group_id: str
     teacher: TeacherScheme
-    homework: str
+    homework: str | None = None
 
 
 class LessonUpdateScheme(BaseLessonScheme):
@@ -38,6 +38,10 @@ class BaseMarkScheme(BaseModel):
 
 class MarkCreateScheme(BaseMarkScheme):
     pass
+
+
+class MarkFullScheme(BaseMarkScheme):
+    lesson: LessonScheme
 
 
 class MarkScheme(BaseModel):
