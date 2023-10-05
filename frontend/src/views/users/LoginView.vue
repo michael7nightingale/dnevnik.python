@@ -27,11 +27,13 @@ export default {
         password: this.password
       }
       console.log(123)
-      console.log(2222222, localStorage.userData)
+
       loginUser(data)
           .then((response) => {
               setUser(response.data['access-token'])
-              window.location = this.$router.resolve({name: "homepage"}).fullPath;
+                  .then(() => {
+                      window.location = this.$router.resolve({name: "homepage"}).fullPath;
+                    })
           })
           .catch((error) => {
               this.error = error.response.data.detail;

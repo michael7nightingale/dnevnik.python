@@ -20,8 +20,7 @@ export default {
 
   },
   mounted() {
-    // localStorage.removeItem("user")
-    console.log(localStorage.userData)
+    console.log(localStorage.user)
   }
 
 
@@ -49,10 +48,13 @@ export default {
                 </ul>
               <ul v-if="user" class="navbar-nav">
                 <li>
-                  <router-link class="nav-link" :to="{name: 'marks'}">Оценки</router-link>
+                  <router-link class="nav-link" :to="{name: 'my-marks'}">Оценки</router-link>
                 </li>
                 <li>
-                  <router-link class="nav-link" :to="{name: 'lessons'}">Уроки</router-link>
+                  <router-link class="nav-link" :to="{name: 'my-lessons'}">Уроки</router-link>
+                </li>
+                <li>
+                  <router-link class="nav-link" :to="{name: 'my-class'}">Класс</router-link>
                 </li>
                 <li>
                   <router-link class="nav-link" :to="{name: 'cabinet'}">Кабинет</router-link>
@@ -80,4 +82,6 @@ export default {
 </template>
 
 <style>
+@import "assets/css/main.css";
+@import "assets/css/loader.css";
 </style>

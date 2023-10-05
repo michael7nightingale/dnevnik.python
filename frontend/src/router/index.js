@@ -4,6 +4,7 @@ import LoginView from "@/views/users/LoginView.vue";
 import CabinetView from "@/views/users/CabinetView.vue";
 import LessonsView from "@/views/lessons/LessonsView.vue";
 import MarksView from "@/views/lessons/MarksView.vue";
+import MyClassView from "@/views/classes/MyClassView.vue";
 
 
 const routes = [
@@ -23,14 +24,19 @@ const routes = [
     component: CabinetView
   },
   {
-    path: "/lessons",
-    name: "lessons",
+    path: "/my-lessons",
+    name: "my-lessons",
     component: LessonsView
   },
   {
-    path: "/marks",
-    name: "marks",
+    path: "/my-marks",
+    name: "my-marks",
     component: MarksView
+  },
+  {
+    path: "/my-class",
+    name: "my-class",
+    component: MyClassView
   }
 
 

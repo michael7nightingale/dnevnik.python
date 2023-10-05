@@ -10,7 +10,7 @@ export default {
       user: null,
       school: null,
       type_: null,
-      class: null
+      class_: null
 
     }
   },
@@ -23,15 +23,15 @@ export default {
       return `${this.school.area} ${this.school.city}`
     },
     classLabel(){
-      if (this.class.class){
-          if (this.class.subclass){
-            return `${this.class.class.label} класс (${this.class.subclass.label})`
+      if (this.class_.class_){
+          if (this.class_.subclass){
+            return `${this.class_.class.label} класс (${this.class_.subclass.label})`
           }
           else {
-            return `${this.class.class.label} класс`
+            return `${this.class_.class.label} класс`
           }
       }
-      return `${this.class.subclass.label} класс`
+      return `${this.class_.subclass.label} класс`
     },
 
   },
@@ -45,14 +45,18 @@ export default {
     this.type_ = this.user["type"];
     getMySchool()
         .then((response) => {
-          console.log(response.data)
           this.school = response.data;
 
         });
     getMyClass()
         .then((response) => {
-          this.class = response.data;
+          this.class_ = response.data;
         });
+    while (!(this.school || this.user || this.class_)){
+      true
+    }
+    document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
+    document.getElementById("main").className = document.getElementById("main").className.replace("hide", "show")
 
   }
 
@@ -60,10 +64,25 @@ export default {
 </script>
 
 <template>
-  <div v-if="user && school">
-    <section style="background-color: #eee;">
+  <div class="centered show" id="loader">
+    <h4 style="">Загрузка...</h4>
+    <span class="loader"></span>
+  </div>
+  <div id="main" class="hide">
+    <div v-if="user && school && class_">
+  <section style="background-color: #eee;">
   <div class="container py-5">
-
+<!--    <div class="row">-->
+<!--      <div class="col">-->
+<!--        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">-->
+<!--          <ol class="breadcrumb mb-0">-->
+<!--            <li class="breadcrumb-item"><a href="#">Home</a></li>-->
+<!--            <li class="breadcrumb-item"><a href="#">User</a></li>-->
+<!--            <li class="breadcrumb-item active" aria-current="page">User Profile</li>-->
+<!--          </ol>-->
+<!--        </nav>-->
+<!--      </div>-->
+<!--    </div>-->
     <div class="row">
       <div class="col-lg-4">
         <div class="card mb-4">
@@ -228,8 +247,9 @@ export default {
   </div>
 </section>
   </div>
+  </div>
+
 </template>
 
 <style scoped>
-
 </style>
