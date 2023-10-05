@@ -17,5 +17,5 @@ async def get_my_class(request: Request):
         "class_": study_group.class_,
         "subclass": study_group.subclass,
         "main_teacher": study_group.main_teacher,
-        "pupils": await Pupil.filter(study_group=study_group)
+        "pupils": await Pupil.all_by_study_group(study_group)
     }
