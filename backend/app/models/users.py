@@ -1,6 +1,7 @@
 from tortoise import fields
 from tortoise.expressions import Q
 from tortoise.exceptions import IntegrityError
+from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from uuid import uuid4
@@ -110,8 +111,8 @@ class UserTypeModel(TortoiseModel):
         )
 
     @classmethod
-    async def filter(cls, *args, **kwargs) -> list["UserTypeModel"]:
-        return await (
+    def filter(cls, *args, **kwargs) -> QuerySet["UserTypeModel"]:
+        return (
             super()
             .filter(*args, **kwargs)
             .select_related("user", "school")
@@ -194,6 +195,14 @@ class Pupil(UserTypeModel):
         return await Mark.filter(
             args,
             pupil=self,
+        )
+
+    @classmethod
+    def all_by_study_group(cls, study_group: StudyGroup):
+        return (
+            super()
+            .filter(study_group=study_group)
+            .order_by("user__last_name", "user__first_name", "user__father_name")
         )
 
 

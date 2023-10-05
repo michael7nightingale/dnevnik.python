@@ -1,6 +1,7 @@
 import datetime
 
 from tortoise import fields
+from tortoise.queryset import QuerySet
 
 from .base import TortoiseModel
 
@@ -16,8 +17,8 @@ class Lesson(TortoiseModel):
     homework = fields.TextField(null=True)
 
     @classmethod
-    async def filter(cls, *args, **kwargs) -> list["Lesson"]:
-        return await (
+    def filter(cls, *args, **kwargs) -> QuerySet["Lesson"]:
+        return (
             super()
             .filter(*args, **kwargs)
             .select_related("teacher", "teacher__user")
@@ -33,8 +34,8 @@ class Mark(TortoiseModel):
     is_skipped = fields.BooleanField(default=False)
 
     @classmethod
-    async def filter(cls, *args, **kwargs) -> list["Mark"]:
-        return await (
+    def filter(cls, *args, **kwargs) -> QuerySet["Mark"]:
+        return (
             super()
             .filter(*args, **kwargs)
             .select_related("lesson")

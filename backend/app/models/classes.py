@@ -1,4 +1,5 @@
 from tortoise import fields
+from tortoise.queryset import QuerySetSingle
 
 from .base import TortoiseModel
 
@@ -20,8 +21,8 @@ class StudyGroup(TortoiseModel):
     main_teacher = fields.OneToOneField("models.Teacher", "main_class")
 
     @classmethod
-    async def get(cls, *args, **kwargs) -> "StudyGroup":
-        return await (
+    def get(cls, *args, **kwargs) -> QuerySetSingle["StudyGroup"]:
+        return (
             super()
             .get(*args, **kwargs)
             .select_related("class_", "subclass", "subclass__class_", "main_teacher", "main_teacher__user")
