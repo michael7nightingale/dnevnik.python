@@ -46,6 +46,20 @@ def is_pupil_permission(func):
     return inner
 
 
+def is_pupil_or_teacher_permission(func):
+    @wraps(func)
+    @login_required
+    async def inner(request: Request, *args, **kwargs):
+        if not (isinstance(request.user, Pupil) or isinstance(request.user, Teacher)):
+            raise HTTPException(
+                detail="Вы не учитель и не ученик.",
+                status_code=403
+            )
+        response = await func(request, *args, **kwargs)
+        return response
+    return inner
+
+
 def is_administrator_permission(func):
     @wraps(func)
     @login_required

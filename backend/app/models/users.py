@@ -1,7 +1,7 @@
 from tortoise import fields
 from tortoise.expressions import Q
 from tortoise.exceptions import IntegrityError
-from tortoise.queryset import QuerySet
+from tortoise.queryset import QuerySet, QuerySetSingle
 from tortoise.transactions import in_transaction
 
 from uuid import uuid4
@@ -103,8 +103,8 @@ class UserTypeModel(TortoiseModel):
             return await super().create(**kwargs, user=user, school=(await School.first()), study_group=(await StudyGroup.first()))    # type: ignore
 
     @classmethod
-    async def get_or_none(cls, *args, **kwargs) -> Optional["UserTypeModel"]:
-        return await (
+    def get_or_none(cls, *args, **kwargs) -> QuerySetSingle[Optional["UserTypeModel"]]:
+        return (
             super()
             .get_or_none(*args, **kwargs)
             .select_related("user", "school")
@@ -127,19 +127,22 @@ class Teacher(UserTypeModel):
     user = fields.OneToOneField("models.User", "teacher")
     school = fields.ForeignKeyField("models.School", "teachers")
 
-    async def get_lessons(
+    def get_lessons(
             self,
             from_date: datetime.date | None = None,
             to_date: datetime.date | None = None
-    ) -> list[Lesson]:
+    ) -> QuerySet[Lesson]:
         if from_date is not None and to_date is not None:
             args = Q(date__gte=from_date) | Q(date__lte=to_date)
         else:
             args = Q(date__gte=from_date) if from_date is not None else Q(date__lte=to_date)
-        return await Lesson.filter(
+        return Lesson.filter(
             args,
             teacher=self
         )
+
+    async def get_study_group(self) -> StudyGroup | None:
+        return await StudyGroup.get_or_none(main_teacher=self)
 
     async def get_marks(
             self,
@@ -163,7 +166,7 @@ class Pupil(UserTypeModel):
     study_group = fields.ForeignKeyField("models.StudyGroup", "pupils")
 
     async def get_study_group(self) -> StudyGroup:
-        return await StudyGroup.get(id=self.study_group_id)
+        return await StudyGroup.get_or_none(id=self.study_group_id)
 
     async def get_lessons(
             self,
