@@ -1,7 +1,6 @@
-import datetime
-
 from tortoise import fields
 from tortoise.queryset import QuerySet
+import datetime
 
 from .base import TortoiseModel
 

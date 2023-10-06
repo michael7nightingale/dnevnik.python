@@ -21,9 +21,9 @@ class StudyGroup(TortoiseModel):
     main_teacher = fields.OneToOneField("models.Teacher", "main_class")
 
     @classmethod
-    def get(cls, *args, **kwargs) -> QuerySetSingle["StudyGroup"]:
+    def get_or_none(cls, *args, **kwargs) -> QuerySetSingle["StudyGroup"]:
         return (
             super()
-            .get(*args, **kwargs)
+            .get_or_none(*args, **kwargs)
             .select_related("class_", "subclass", "subclass__class_", "main_teacher", "main_teacher__user")
         )
