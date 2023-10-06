@@ -1,10 +1,11 @@
 <script>
-import {getUser} from "@/services/Auth";
+import {getUser, isPupil, isPupilOrTeacher, isTeacher} from "@/services/Auth";
 import {getMySchool} from "@/services/Schools";
 import {getMyClass} from "@/services/Classes";
 
 export default {
   name: "CabinetView",
+  methods: {isTeacher, isPupil},
   data(){
     return {
       user: null,
@@ -20,7 +21,7 @@ export default {
       return `${this.user.last_name} ${this.user.first_name} ${this.user.father_name}`
     },
     fullSchoolName(){
-      return `${this.school.area} ${this.school.city}`
+      return this.school.name;
     },
     classLabel(){
       if (this.class_.class_){
@@ -33,6 +34,15 @@ export default {
       }
       return `${this.class_.subclass.label} класс`
     },
+
+    userTypeSign(){
+      let typeMatches = {
+        pupil: "Ученик",
+        teacher: "Учитель",
+        administrator: "Администратор"
+      }
+      return typeMatches[this.user.type];
+    }
 
   },
 
@@ -48,11 +58,13 @@ export default {
           this.school = response.data;
 
         });
-    getMyClass()
+    if (isPupilOrTeacher(this.user)){
+      getMyClass()
         .then((response) => {
           this.class_ = response.data;
         });
-    while (!(this.school || this.user || this.class_)){
+    }
+    while (!(this.school || this.user)){
       true
     }
     document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
@@ -69,7 +81,7 @@ export default {
     <span class="loader"></span>
   </div>
   <div id="main" class="hide">
-    <div v-if="user && school && class_">
+    <div v-if="user && school">
   <section style="background-color: #eee;">
   <div class="container py-5">
 <!--    <div class="row">-->
@@ -90,7 +102,7 @@ export default {
             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
               class="rounded-circle img-fluid" style="width: 150px;">
             <h5 class="my-3">{{ fullUserName }}</h5>
-            <p class="text-muted mb-1">Full Stack Developer</p>
+            <p class="text-muted mb-1">{{ userTypeSign }}</p>
             <p class="text-muted mb-4">{{ fullSchoolName }}</p>
             <div class="d-flex justify-content-center mb-2">
               <button type="button" class="btn btn-primary">Follow</button>
@@ -130,7 +142,7 @@ export default {
           <div class="card-body">
             <div class="row">
               <div class="col-sm-3">
-                <p class="mb-0">Имя</p>
+                <p class="mb-0">Ф.И.О.</p>
               </div>
               <div class="col-sm-9">
                 <p class="text-muted mb-0">{{ fullUserName }}</p>
@@ -155,7 +167,7 @@ export default {
               </div>
             </div>
             <hr>
-            <div class="row">
+            <div v-if="isTeacher(user) && class_" class="row">
               <div class="col-sm-3">
                 <p class="mb-0">Класс</p>
               </div>

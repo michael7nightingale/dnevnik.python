@@ -34,3 +34,24 @@ export function logoutUser(){
     localStorage.removeItem("user");
     localStorage.removeItem("userData")
 }
+
+
+export function isTeacher(userData){
+    return userData.type === "teacher";
+}
+
+
+export function isPupil(userData){
+    return userData.type === "pupil";
+}
+
+
+export function isPupilOrTeacher(userData){
+    return userData.type === "pupil" || userData.type === "teacher";
+}
+
+
+
+export function isAdministrator(userData){
+    return userData.type === "administrator";
+}
