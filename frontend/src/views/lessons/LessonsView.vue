@@ -1,6 +1,6 @@
 <script>
 import {getLessons} from "@/services/Lessons";
-import {getUser} from "@/services/Auth";
+import {getUser, isPupil} from "@/services/Auth";
 
 export default{
   name: "LessonsView",
@@ -16,6 +16,9 @@ export default{
     let user = getUser();
     if (!user){
       window.location = this.$router.resolve({name: "login"}).fullPath;
+    }
+    if (!isPupil(user.user)){
+      window.location = this.$router.resolve({name: "permissions-error"}).fullPath
     }
     getLessons()
         .then((response) => {

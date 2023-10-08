@@ -1,6 +1,6 @@
 <script>
 import {getMarks} from "@/services/Marks";
-import {getUser} from "@/services/Auth";
+import {getUser, isPupil} from "@/services/Auth";
 import {getSubjects} from "@/services/Subjects";
 
 
@@ -18,6 +18,9 @@ export default{
     let user = getUser();
     if (!user){
       window.location = this.$router.resolve({name: "login"}).fullPath;
+    }
+    if (!isPupil(user.user)){
+      window.location = this.$router.resolve({name: "permissions-error"}).fullPath
     }
     getSubjects()
         .then((response) => {

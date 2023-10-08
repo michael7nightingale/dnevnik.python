@@ -1,5 +1,5 @@
 <script>
-import {getUser} from "@/services/Auth";
+import {getUser, isPupilOrTeacher} from "@/services/Auth";
 import {getMySchool} from "@/services/Schools";
 import {getMyClass} from "@/services/Classes";
 
@@ -36,6 +36,9 @@ export default {
     let user = getUser();
     if (!user){
       window.location = this.$router.resolve({name: "login"}).fullPath;
+    }
+    if (!isPupilOrTeacher(user.user)){
+      window.location = this.$router.resolve({name: "permissions-error"}).fullPath
     }
     this.user = user.user;
     this.type_ = this.user["type"];
