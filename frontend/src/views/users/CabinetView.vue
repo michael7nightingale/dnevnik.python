@@ -1,11 +1,11 @@
 <script>
-import {getUser, isPupil, isPupilOrTeacher, isTeacher} from "@/services/Auth";
+import {getUser, isPupilOrTeacher} from "@/services/Auth";
 import {getMySchool} from "@/services/Schools";
 import {getMyClass} from "@/services/Classes";
 
 export default {
   name: "CabinetView",
-  methods: {isTeacher, isPupil},
+  methods: {isPupilOrTeacher},
   data(){
     return {
       user: null,
@@ -74,6 +74,7 @@ export default {
 
 }
 </script>
+
 
 <template>
   <div class="centered show" id="loader">
@@ -167,15 +168,17 @@ export default {
               </div>
             </div>
             <hr>
-            <div v-if="isTeacher(user) && class_" class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Класс</p>
+            <div v-if="isPupilOrTeacher(user) && class_">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Класс</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">{{ classLabel }}</p>
+                </div>
               </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ classLabel }}</p>
-              </div>
+              <hr>
             </div>
-            <hr>
             <div class="row">
               <div class="col-sm-3">
                 <p class="mb-0">Школа</p>
@@ -262,6 +265,7 @@ export default {
   </div>
 
 </template>
+
 
 <style scoped>
 </style>
