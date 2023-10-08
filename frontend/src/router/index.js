@@ -5,6 +5,7 @@ import CabinetView from "@/views/users/CabinetView.vue";
 import LessonsView from "@/views/lessons/LessonsView.vue";
 import MarksView from "@/views/lessons/MarksView.vue";
 import MyClassView from "@/views/classes/MyClassView.vue";
+import PermissionsView from "@/views/error/PermissionsView.vue";
 
 
 const routes = [
@@ -37,6 +38,11 @@ const routes = [
     path: "/my-class",
     name: "my-class",
     component: MyClassView
+  },
+  {
+    path: "/error/permissions",
+    name: "permissions-error",
+    component: PermissionsView
   }
 
 
