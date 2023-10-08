@@ -4,6 +4,7 @@ import datetime
 from app.schemas.lessons import (
     LessonUpdateScheme, LessonFullScheme,
     MarkFullScheme, MarkCreateScheme, MarkUpdateScheme,
+    StudyGroupSubjectScheme,
 
 )
 from app.api.permissions.users import is_pupil_permission, is_teacher_permission
@@ -14,6 +15,12 @@ from app.models import Mark, Lesson
 router = APIRouter(prefix="/lessons")
 
 
+@router.get("/subjects", response_model=list[StudyGroupSubjectScheme])
+@is_pupil_permission
+async def get_my_lessons(request: Request):
+    return await request.user.get_subjects()
+
+
 @router.get("/", response_model=list[LessonFullScheme])
 @is_pupil_permission
 async def get_my_lessons(
@@ -21,7 +28,6 @@ async def get_my_lessons(
         from_date: datetime.date | None = Query(required=False, default=None),
         to_date: datetime.date | None = Query(required=False, default=None)
 ):
-    print(await request.user.get_lessons(from_date, to_date))
     return await request.user.get_lessons(from_date, to_date)
 
 
