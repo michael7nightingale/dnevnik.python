@@ -5,13 +5,33 @@ import datetime
 from .base import TortoiseModel
 
 
+class Subject(TortoiseModel):
+    name = fields.CharField(max_length=255)
+
+
+class StudyGroupSubject(TortoiseModel):
+    subject = fields.ForeignKeyField("models.Subject")
+    teacher = fields.ForeignKeyField("models.Teacher")
+    study_group = fields.ForeignKeyField("models.StudyGroup")
+
+    @classmethod
+    def filter(cls, *args, **kwargs) -> QuerySet["StudyGroupSubject"]:
+        return (
+            super()
+            .filter(*args, **kwargs)
+            .select_related("subject", "teacher", "teacher__user")
+        )
+
+    class Meta:
+        unique_together = [("subject", "teacher", "study_group")]
+
+
 class Lesson(TortoiseModel):
     date = fields.DateField(default=lambda: datetime.datetime.now().date(), null=True)
     start_at = fields.TimeField(default=lambda: datetime.datetime.now().time(), null=True)
     finish_at = fields.TimeField(default=lambda: datetime.datetime.now().time(), null=True)
-    study_group = fields.ForeignKeyField("models.StudyGroup", "lessons")
-    teacher = fields.ForeignKeyField("models.Teacher", "lessons")
-    science = fields.CharField(max_length=255)
+    place = fields.CharField(max_length=40)
+    study_group_subject = fields.ForeignKeyField("models.StudyGroupSubject")
     theme = fields.CharField(max_length=255)
     homework = fields.TextField(null=True)
 
@@ -20,7 +40,9 @@ class Lesson(TortoiseModel):
         return (
             super()
             .filter(*args, **kwargs)
-            .select_related("teacher", "teacher__user")
+            .select_related(
+                "study_group_subject", "study_group_subject__subject",
+                "study_group_subject__teacher", "study_group_subject__teacher__user")
         )
 
 

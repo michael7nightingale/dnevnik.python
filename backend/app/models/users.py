@@ -10,7 +10,7 @@ from enum import StrEnum, auto
 import random
 from typing import Optional
 
-from .lessons import Lesson, Mark
+from .lessons import Lesson, Mark, StudyGroupSubject
 from .base import TortoiseModel
 from .schools import School
 from .classes import StudyGroup
@@ -138,7 +138,7 @@ class Teacher(UserTypeModel):
             args = Q(date__gte=from_date) if from_date is not None else Q(date__lte=to_date)
         return Lesson.filter(
             args,
-            teacher=self
+            study_group_subject__teacher=self
         )
 
     async def get_study_group(self) -> StudyGroup | None:
@@ -168,21 +168,32 @@ class Pupil(UserTypeModel):
     async def get_study_group(self) -> StudyGroup:
         return await StudyGroup.get_or_none(id=self.study_group_id)
 
+    async def get_subjects(self) -> list[StudyGroupSubject]:
+        return await StudyGroupSubject.filter(study_group=self.study_group_id)
+
     async def get_lessons(
             self,
             from_date: datetime.date | None = None,
             to_date: datetime.date | None = None
     ) -> list[Lesson]:
+        # for lesson in await Lesson.all():
+        #     lesson.date = datetime.datetime.now().date()
+        #     lesson.start_at = datetime.datetime.now().time()
+        #     lesson.finish_at = datetime.datetime.now().time()
+        #     await lesson.save()
+        queryset = None
         if from_date is None and to_date is None:
-            return await Lesson.filter(study_group_id=self.study_group_id)
+            queryset = Lesson.filter(study_group_subject__study_group_id=self.study_group_id)
         if from_date is not None and to_date is not None:
             args = Q(date__gte=from_date) | Q(date__lte=to_date)
         else:
             args = Q(date__gte=from_date) if from_date is not None else Q(date__lte=to_date)
-        return await Lesson.filter(
-            args,
-            study_group_id=self.study_group_id,
-        )
+        if queryset is None:
+            queryset = Lesson.filter(
+                args,
+                study_group_subject__study_group_id=self.study_group_id,
+            )
+        return await queryset.order_by("date", "start_at")
 
     async def get_marks(
             self,
