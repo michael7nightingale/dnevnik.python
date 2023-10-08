@@ -56,20 +56,19 @@ export default {
     getMySchool()
         .then((response) => {
           this.school = response.data;
-
-        });
-    if (isPupilOrTeacher(this.user)){
-      getMyClass()
-        .then((response) => {
-          this.class_ = response.data;
-        });
-    }
-    while (!(this.school || this.user)){
-      true
-    }
-    document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
-    document.getElementById("main").className = document.getElementById("main").className.replace("hide", "show")
-
+        })
+        .then(() => {
+           if (isPupilOrTeacher(this.user)) {
+             getMyClass()
+                 .then((response) => {
+                   this.class_ = response.data;
+                 });
+           }
+        })
+        .then(() => {
+          document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
+          document.getElementById("main").className = document.getElementById("main").className.replace("hide", "show")
+        })
   }
 
 }

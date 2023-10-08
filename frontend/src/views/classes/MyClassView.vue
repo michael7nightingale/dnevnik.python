@@ -46,18 +46,18 @@ export default {
         .then((response) => {
           this.school = response.data;
 
+        })
+        .then(() => {
+          getMyClass()
+            .then((response) => {
+              this.class_ = response.data;
+              this.pupils = response.data.pupils;
+            });
+        })
+        .then(() => {
+           document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
+           document.getElementById("main").className = document.getElementById("main").className.replace("hide", "show")
         });
-    getMyClass()
-        .then((response) => {
-          this.class_ = response.data;
-          this.pupils = response.data.pupils;
-        });
-    while (!(this.school || this.user || this.class_)){
-      true
-    }
-    document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
-    document.getElementById("main").className = document.getElementById("main").className.replace("hide", "show")
-
   }
 }
 </script>

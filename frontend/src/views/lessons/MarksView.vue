@@ -45,7 +45,11 @@ export default{
                    this.marksTable = marksTableProxy;
               })
           }
-        );
+        )
+        .then(() => {
+           document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
+           document.getElementById("main").className = document.getElementById("main").className.replace("hide", "show")
+        });
 
   },
   methods: {
@@ -63,7 +67,12 @@ export default{
 </script>
 
 <template>
-<div v-if="marks && subjects">
+  <div class="centered show" id="loader">
+    <h4 style="">Загрузка...</h4>
+    <span class="loader"></span>
+  </div>
+  <div id="main" class="hide">
+    <div v-if="marks && subjects">
   <section class="w-100 p-4 justify-content-center">
 <!--      <div class="row justify-content-start" id="filter-sort-example-filters" data-mdb-auto-filter="true">-->
 <!--        <div class="col-md-6" data-mdb-filter="color">-->
@@ -151,6 +160,8 @@ export default{
 
     </section>
 </div>
+  </div>
+
 </template>
 
 <style scoped>

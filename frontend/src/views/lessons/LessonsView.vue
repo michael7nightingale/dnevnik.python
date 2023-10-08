@@ -44,6 +44,10 @@ export default{
             }
           }
           this.schedule = scheduleProxy;
+        })
+        .then(() => {
+           document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
+           document.getElementById("main").className = document.getElementById("main").className.replace("hide", "show")
         });
 
   },
@@ -68,7 +72,12 @@ export default{
 </script>
 
 <template>
-<div v-if="schedule && lessons">
+  <div class="centered show" id="loader">
+    <h4 style="">Загрузка...</h4>
+    <span class="loader"></span>
+  </div>
+  <div id="main" class="hide">
+    <div v-if="schedule && lessons">
   <div v-for="(data, dayOfWeek) in schedule" :key="data">
     <h2>{{dayOfWeek}}</h2>
     <div class="row">
@@ -83,6 +92,7 @@ export default{
     <hr>
   </div>
 </div>
+  </div>
 </template>
 
 <style>
