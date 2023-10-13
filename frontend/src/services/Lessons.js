@@ -14,3 +14,12 @@ export function getLessons(){
 }
 
 
+export function getTeachingClasses(){
+    return axios
+        .get(
+            buildUrl("lessons/teacher/classes/all"),
+           {
+            headers: getHeaders()
+             }
+        )
+}
