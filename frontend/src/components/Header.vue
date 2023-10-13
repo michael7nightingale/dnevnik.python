@@ -68,11 +68,11 @@ export default {
 
                 <ul v-if="isTeacher(user.user)" class="navbar-nav">
                   <li>
-                    <router-link class="nav-link" :to="{name: 'my-marks'}">Журнал</router-link>
+                    <router-link class="nav-link" :to="{name: 'my-journal'}">Журнал</router-link>
                   </li>
-                  <li>
-                    <router-link class="nav-link" :to="{name: 'my-lessons'}">Уроки</router-link>
-                  </li>
+<!--                  <li>-->
+<!--                    <router-link class="nav-link" :to="{name: 'my-lessons'}">Уроки</router-link>-->
+<!--                  </li>-->
                   <li>
                     <router-link class="nav-link" :to="{name: 'my-class'}">Мой класс</router-link>
                   </li>
