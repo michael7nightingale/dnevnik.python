@@ -12,6 +12,12 @@ class SubclassScheme(BaseModel):
     class_: ClassScheme | None = None
 
 
+class StudyGroupListScheme(BaseModel):
+    class_: ClassScheme | None = None
+    subclass: SubclassScheme | None = None
+    may_join: bool
+
+
 class StudyGroupScheme(BaseModel):
     class_: ClassScheme | None = None
     subclass: SubclassScheme | None = None

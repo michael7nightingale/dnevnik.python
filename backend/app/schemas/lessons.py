@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 import datetime
 
-from app.schemas.classes import StudyGroupScheme
+from app.schemas.classes import StudyGroupListScheme
 from app.schemas.users import TeacherScheme
 
 
@@ -19,12 +19,13 @@ class SubjectScheme(BaseSubjectScheme):
 
 class BaseStudyGroupSubjectScheme(BaseModel):
     subject: SubjectScheme
+    teacher_id: str
     study_group_id: str
-    teacher: TeacherScheme
 
 
 class StudyGroupSubjectScheme(BaseStudyGroupSubjectScheme):
     id: str
+    teacher: TeacherScheme
 
 
 class BaseLessonScheme(BaseModel):
@@ -85,3 +86,8 @@ class MarkUpdateScheme(BaseModel):
     is_ill: bool | None = None
     is_absent: bool | None = None
     is_skipped: bool | None = None
+
+
+class StudyGroupSubjectListScheme(BaseStudyGroupSubjectScheme):
+    id: str
+    study_group: StudyGroupListScheme
