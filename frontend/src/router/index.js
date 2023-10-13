@@ -6,6 +6,7 @@ import LessonsView from "@/views/lessons/LessonsView.vue";
 import MarksView from "@/views/lessons/MarksView.vue";
 import MyClassView from "@/views/classes/MyClassView.vue";
 import PermissionsView from "@/views/error/PermissionsView.vue";
+import JournalView from "@/views/lessons/JournalView.vue";
 
 
 const routes = [
@@ -33,6 +34,11 @@ const routes = [
     path: "/my-marks",
     name: "my-marks",
     component: MarksView
+  },
+  {
+    path: "/my-journal",
+    name: "my-journal",
+    component: JournalView
   },
   {
     path: "/my-class",
