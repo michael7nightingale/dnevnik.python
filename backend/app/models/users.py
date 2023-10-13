@@ -158,6 +158,9 @@ class Teacher(UserTypeModel):
             teacher=self
         )
 
+    async def get_teaching_classes(self) -> list[StudyGroupSubject]:
+        return await StudyGroupSubject.filter(teacher=self)
+
 
 class Pupil(UserTypeModel):
     type = "pupil"

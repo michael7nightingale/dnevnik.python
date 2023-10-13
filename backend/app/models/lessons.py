@@ -1,5 +1,5 @@
 from tortoise import fields
-from tortoise.queryset import QuerySet
+from tortoise.queryset import QuerySet, QuerySetSingle
 import datetime
 
 from .base import TortoiseModel
@@ -19,7 +19,7 @@ class StudyGroupSubject(TortoiseModel):
         return (
             super()
             .filter(*args, **kwargs)
-            .select_related("subject", "teacher", "teacher__user")
+            .select_related("subject", "study_group",  "study_group__class_", "study_group__subclass")
         )
 
     class Meta:

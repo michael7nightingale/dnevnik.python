@@ -4,7 +4,7 @@ import datetime
 from app.schemas.lessons import (
     LessonUpdateScheme, LessonFullScheme,
     MarkFullScheme, MarkCreateScheme, MarkUpdateScheme,
-    StudyGroupSubjectScheme,
+    StudyGroupSubjectScheme, StudyGroupSubjectListScheme,
 
 )
 from app.api.permissions.users import is_pupil_permission, is_teacher_permission
@@ -31,7 +31,7 @@ async def get_my_lessons(
     return await request.user.get_lessons(from_date, to_date)
 
 
-@router.get("/teacher")
+@router.get("/teacher/lessons")
 @is_teacher_permission
 async def get_my_lessons_teacher(
         request: Request,
@@ -41,7 +41,25 @@ async def get_my_lessons_teacher(
     return await request.user.get_lessons(from_date, to_date)
 
 
-@router.get("/teacher/{lesson_id}")
+@router.get("/teacher/classes/all", response_model=list[StudyGroupSubjectListScheme])
+@is_teacher_permission
+async def get_teaching_classes(request: Request):
+    return [
+        {
+            **cl.as_dict(),
+            "study_group": {
+                **cl.study_group.as_dict(),
+                "class_": cl.study_group.class_.as_dict() if cl.study_group.class_ is not None else None,
+                "subclass": cl.study_group.subclass.as_dict() if cl.study_group.subclass is not None else None
+            },
+            "subject": cl.subject
+        }
+        for cl in await request.user.get_teaching_classes()
+    ]
+
+
+
+@router.get("/teacher/lessons/{lesson_id}")
 @is_teacher_permission
 async def get_lesson_detail(
         request: Request,
@@ -50,7 +68,7 @@ async def get_lesson_detail(
     return lesson
 
 
-@router.patch("/teacher/{lesson_id}")
+@router.patch("/teacher/lessons/{lesson_id}")
 @is_teacher_permission
 async def update_lesson(
         request: Request,
