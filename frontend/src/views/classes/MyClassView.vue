@@ -21,10 +21,10 @@ export default {
     classLabel(){
       if (this.class_.class_){
           if (this.class_.subclass){
-            return `${this.class_.class.label} класс (${this.class_.subclass.label})`
+            return `${this.class_.class_.label} класс (${this.class_.subclass.label})`
           }
           else {
-            return `${this.class_.class.label} класс`
+            return `${this.class_.class_.label} класс`
           }
       }
       return `${this.class_.subclass.label} класс`

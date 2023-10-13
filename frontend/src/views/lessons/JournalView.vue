@@ -41,6 +41,26 @@ export default{
 
   },
 
+  methods: {
+    getClassLabel(class_){
+      if (class_.class_){
+          if (class_.subclass){
+            return `${class_.class_.label} класс (${class_.subclass.label})`
+          }
+          else {
+            return `${class_.class_.label} класс`
+          }
+      }
+      return `${class_.subclass.label} класс`
+    },
+    goToStudyGroupSubjectView(studyGroupSubject){
+       let id = studyGroupSubject.id;
+       id
+       window.location = this.$router.resolve({name: "homepage"}).fullPath;
+    }
+
+  },
+
 }
 </script>
 
@@ -53,17 +73,22 @@ export default{
     <div v-if="studyGroupSubjects">
       <div class="accordion" id="accordionPanelsStayOpenExample">
         <div class="accordion-item" v-for="(data, subjectName) in studyGroupSubjects" :key="data">
-          <h2 class="accordion-header" :id="`panelsStayOpen-${subjectName}`">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" :data-bs-target="`#panelsStayOpen-c${subjectName}`" aria-expanded="true" :aria-controls="`panelsStayOpen-c${subjectName}`">
-             {{ subjectName }}
+          <h2 class="accordion-header" :id="`${subjectName}-header`">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" :data-bs-target="`#${subjectName}-collapse`" aria-expanded="true" :aria-controls="`${subjectName}-collapse`">
+              {{ subjectName }}
             </button>
           </h2>
-          <div :id="`panelsStayOpen-c${subjectName}`" class="accordion-collapse collapse show" :aria-labelledby="`panelsStayOpen-${subjectName}`">
+          <div :id="`${subjectName}-collapse`" class="accordion-collapse collapse show" :aria-labelledby="`${subjectName}-header`">
             <div class="accordion-body">
-              <div class="row">
-                <div class="col-lg-3" v-for="studySubjectGroup of data" :key="studySubjectGroup">
-                  {{ studySubjectGroup }}
-                </div>
+              <div
+                  class="col-4 study-group-subject-card"
+                  v-for="studyGroupSubject of data"
+                  :key="studyGroupSubject"
+                  @clic="goToStudyGroupSubjectView(studyGroupSubject)"
+              >
+                 <a @click="goToStudyGroupSubjectView(studyGroupSubject)">
+                   <h5 class="text-center prevent-select" style="text-align: center">{{ getClassLabel(studyGroupSubject.study_group) }}</h5>
+                 </a>
               </div>
             </div>
           </div>
@@ -78,5 +103,5 @@ export default{
 </template>
 
 <style scoped>
-
+@import "../../assets/css/lessons.css";
 </style>
