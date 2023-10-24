@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import datetime
 
 from app.schemas.classes import StudyGroupListScheme
-from app.schemas.users import TeacherScheme
+from app.schemas.users import TeacherScheme, PupilScheme
 
 
 class BaseSubjectScheme(BaseModel):
@@ -57,10 +57,10 @@ class LessonUpdateScheme(BaseLessonScheme):
 class BaseMarkScheme(BaseModel):
     lesson_id: str
     pupil_id: str
-    mark: int
-    is_ill: bool
-    is_absent: bool
-    is_skipped: bool
+    mark: str
+    is_ill: bool = Field(default=False)
+    is_absent: bool = Field(default=False)
+    is_skipped: bool = Field(default=False)
 
 
 class MarkCreateScheme(BaseMarkScheme):
@@ -80,14 +80,38 @@ class MarkScheme(BaseModel):
     is_skipped: bool
 
 
-class MarkUpdateScheme(BaseModel):
+class MarkListScheme(BaseMarkScheme):
     id: str
-    mark: int | None = None
+
+
+class MarkUpdateScheme(BaseModel):
+    mark: str | None = Field(default=None, max_length=1)
     is_ill: bool | None = None
     is_absent: bool | None = None
     is_skipped: bool | None = None
+
+    def model_post_init(self, __context) -> None:
+        if not self.mark.isnumeric():
+            match self.mark.upper():
+                case "Н":
+                    self.is_skipped = True
+                case "У":
+                    self.is_absent = True
+                case "Б":
+                    self.is_ill = True
+            self.mark = self.mark.upper()
 
 
 class StudyGroupSubjectListScheme(BaseStudyGroupSubjectScheme):
     id: str
     study_group: StudyGroupListScheme
+    subject: SubjectScheme
+
+
+class StudyGroupSubjectDetailScheme(BaseStudyGroupSubjectScheme):
+    id: str
+    study_group: StudyGroupListScheme
+    pupils: list[PupilScheme]
+    subject: SubjectScheme
+    lessons: list[LessonScheme]
+    marks: list[MarkListScheme]
