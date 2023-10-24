@@ -5,13 +5,12 @@ import {getMyClass} from "@/services/Classes";
 
 export default {
   name: "CabinetView",
-  methods: {isPupilOrTeacher},
   data(){
     return {
       user: null,
       school: null,
       type_: null,
-      class_: null
+      class_: null,
 
     }
   },
@@ -69,7 +68,28 @@ export default {
           document.getElementById("loader").className = document.getElementById("loader").className.replace("show", "hide")
           document.getElementById("main").className = document.getElementById("main").className.replace("hide", "show")
         })
-  }
+  },
+
+  methods: {
+    isPupilOrTeacher,
+    imageInputOnChange(event){
+      const avatarFileUpload = document.getElementById('AvatarFileUpload')
+      const imageViewer = avatarFileUpload.querySelector('.selected-image-holder>img')
+      let reader = new FileReader();
+      console.log(reader)
+        reader.onload = function(){
+            imageViewer.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    },
+    imageInputOnClick(event){
+      const avatarFileUpload = document.getElementById('AvatarFileUpload')
+      const imageInput = avatarFileUpload.querySelector('input[name="avatar"]')
+      event.preventDefault()
+      imageInput.click()
+    }
+
+  },
 
 }
 </script>
@@ -84,58 +104,38 @@ export default {
     <div v-if="user && school">
   <section style="background-color: #eee;">
   <div class="container py-5">
-<!--    <div class="row">-->
-<!--      <div class="col">-->
-<!--        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">-->
-<!--          <ol class="breadcrumb mb-0">-->
-<!--            <li class="breadcrumb-item"><a href="#">Home</a></li>-->
-<!--            <li class="breadcrumb-item"><a href="#">User</a></li>-->
-<!--            <li class="breadcrumb-item active" aria-current="page">User Profile</li>-->
-<!--          </ol>-->
-<!--        </nav>-->
-<!--      </div>-->
-<!--    </div>-->
     <div class="row">
       <div class="col-lg-4">
         <div class="card mb-4">
           <div class="card-body text-center">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
-              class="rounded-circle img-fluid" style="width: 150px;">
+            <div class="card-body rounded-0">
+                    <div id="AvatarFileUpload">
+                        <div class="selected-image-holder">
+                            <img :src="user.avatar ? user.avatar : `default-avatar.png`" alt="AvatarInput">
+                        </div>
+                        <div class="avatar-selector">
+                            <a href="#" class="avatar-selector-btn">
+                                <img :src="`camera.svg`" alt="cam" @click="imageInputOnClick($event)">
+                            </a>
+                            <input
+                                @change="imageInputOnChange($event)"
+                                type="file" accept="images/jpg, images/png" name="avatar"
+                            >
+                        </div>
+                    </div>
+            </div>
             <h5 class="my-3">{{ fullUserName }}</h5>
             <p class="text-muted mb-1">{{ userTypeSign }}</p>
             <p class="text-muted mb-4">{{ fullSchoolName }}</p>
             <div class="d-flex justify-content-center mb-2">
-              <button type="button" class="btn btn-primary">Follow</button>
-              <button type="button" class="btn btn-outline-primary ms-1">Message</button>
+              <button type="button" class="btn btn-primary">Подписаться</button>
+              <button type="button" class="btn btn-outline-primary ms-1">Сообщение</button>
             </div>
           </div>
         </div>
-<!--        <div class="card mb-4 mb-lg-0">-->
-<!--          <div class="card-body p-0">-->
-<!--            <ul class="list-group list-group-flush rounded-3">-->
-<!--              <li class="list-group-item d-flex justify-content-between align-items-center p-3">-->
-<!--                <i class="fas fa-globe fa-lg text-warning"></i>-->
-<!--                <p class="mb-0">https://mdbootstrap.com</p>-->
-<!--              </li>-->
-<!--              <li class="list-group-item d-flex justify-content-between align-items-center p-3">-->
-<!--                <i class="fab fa-github fa-lg" style="color: #333333;"></i>-->
-<!--                <p class="mb-0">mdbootstrap</p>-->
-<!--              </li>-->
-<!--              <li class="list-group-item d-flex justify-content-between align-items-center p-3">-->
-<!--                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>-->
-<!--                <p class="mb-0">@mdbootstrap</p>-->
-<!--              </li>-->
-<!--              <li class="list-group-item d-flex justify-content-between align-items-center p-3">-->
-<!--                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>-->
-<!--                <p class="mb-0">mdbootstrap</p>-->
-<!--              </li>-->
-<!--              <li class="list-group-item d-flex justify-content-between align-items-center p-3">-->
-<!--                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>-->
-<!--                <p class="mb-0">mdbootstrap</p>-->
-<!--              </li>-->
-<!--            </ul>-->
-<!--          </div>-->
-<!--        </div>-->
+         <div class="d-flex justify-content-center mb-2">
+           <button type="button" class="btn btn-outline-primary ms-1">Сохранить изменения</button>
+         </div>
       </div>
       <div class="col-lg-8">
         <div class="card mb-4">
@@ -154,7 +154,7 @@ export default {
                 <p class="mb-0">Имя пользователя</p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ this.user.username }}</p>
+                <input class="text-muted mb-0" :value="user.username"/>
               </div>
             </div>
              <hr>
@@ -267,4 +267,93 @@ export default {
 
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@200&family=Space+Mono&display=swap" rel="stylesheet');
+:root{
+    --space-mono-font: 'Space Mono', monospace;
+    --border-dark-subtle: #373838;
+}
+*{
+    box-sizing: border-box;
+}
+body *{
+    font-family: var(--space-mono-font);
+}
+/**
+Page Design
+*/
+body,
+html{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+body{
+    background-color: #282A3A;
+}
+.page-title{
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 3px;
+    font-family: var(--secular-font);
+    text-align: center;
+    text-shadow: 0px 0px 3px #2020208c;
+}
+.border-dark-subtle{
+    border-color: var(--border-dark-subtle) !important;
+}
+/* Avatar File Input Wrapper */
+div#AvatarFileUpload {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    background: #f9f9f9;
+    border: 3px solid #bbb;
+    border-radius: 50% 50%;
+    margin: auto;
+}
+/* Image Preview Wrapper and Container */
+div#AvatarFileUpload > .selected-image-holder{
+    width: 100%;
+    height: 100%;
+    border-radius: 50% 50%;
+
+}
+div#AvatarFileUpload > .selected-image-holder{
+    width: 100%;
+    overflow: hidden;
+}
+div#AvatarFileUpload > .selected-image-holder>img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-fit: center center;
+}
+
+/* Image Selector to Browse Image to Upload */
+div#AvatarFileUpload > .avatar-selector{
+    position: absolute;
+    bottom: 8px;
+    right: 19%;
+    width: 20px;
+    height: 20px;
+}
+div#AvatarFileUpload > .avatar-selector input[type="file"]{
+    display: none;
+}
+div#AvatarFileUpload > .avatar-selector > .avatar-selector-btn{
+    width: 100%;
+    height: 100%;
+    background: #f5f5f59e;
+    padding: 5px 7px;
+    border-radius: 50% 50%;
+}
+div#AvatarFileUpload > .avatar-selector > .avatar-selector-btn>img{
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+    object-position: center center;
+    z-index: 2;
+}
 </style>
