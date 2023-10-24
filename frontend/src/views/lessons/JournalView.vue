@@ -56,7 +56,10 @@ export default{
     goToStudyGroupSubjectView(studyGroupSubject){
        let id = studyGroupSubject.id;
        id
-       window.location = this.$router.resolve({name: "homepage"}).fullPath;
+       window.location = this.$router.resolve({
+         name: "my-journal-detail",
+         params: {classId: studyGroupSubject.id}
+       }).fullPath;
     }
 
   },
