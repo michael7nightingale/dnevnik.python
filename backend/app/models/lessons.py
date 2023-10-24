@@ -22,6 +22,14 @@ class StudyGroupSubject(TortoiseModel):
             .select_related("subject", "study_group",  "study_group__class_", "study_group__subclass")
         )
 
+    @classmethod
+    def get_or_none(cls, *args, **kwargs) -> QuerySetSingle["StudyGroupSubject"] | None:
+        return (
+            super()
+            .get_or_none(*args, **kwargs)
+            .select_related("subject", "study_group", "study_group__class_", "study_group__subclass")
+        )
+
     class Meta:
         unique_together = [("subject", "teacher", "study_group")]
 
@@ -31,7 +39,7 @@ class Lesson(TortoiseModel):
     start_at = fields.TimeField(default=lambda: datetime.datetime.now().time(), null=True)
     finish_at = fields.TimeField(default=lambda: datetime.datetime.now().time(), null=True)
     place = fields.CharField(max_length=40)
-    study_group_subject = fields.ForeignKeyField("models.StudyGroupSubject")
+    study_group_subject = fields.ForeignKeyField("models.StudyGroupSubject", related_name="lessons")
     theme = fields.CharField(max_length=255)
     homework = fields.TextField(null=True)
 
@@ -45,11 +53,19 @@ class Lesson(TortoiseModel):
                 "study_group_subject__teacher", "study_group_subject__teacher__user")
         )
 
+    @classmethod
+    async def get_by_study_group_subject(cls, study_group_subject: StudyGroupSubject) -> list["Lesson"]:
+        return await (
+            super()
+            .filter(study_group_subject=study_group_subject)
+            .prefetch_related("marks")
+        )
+
 
 class Mark(TortoiseModel):
-    lesson = fields.ForeignKeyField("models.Lesson")
-    pupil = fields.ForeignKeyField("models.Pupil")
-    mark = fields.SmallIntField(null=True)
+    lesson = fields.ForeignKeyField("models.Lesson", related_name="marks")
+    pupil = fields.ForeignKeyField("models.Pupil", related_name="pupils")
+    mark = fields.CharField(null=True, max_length=1)
     is_ill = fields.BooleanField(default=False)
     is_absent = fields.BooleanField(default=False)
     is_skipped = fields.BooleanField(default=False)

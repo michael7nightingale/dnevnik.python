@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Request, Query, Body, Depends
+from fastapi.responses import JSONResponse
 import datetime
 
 from app.schemas.lessons import (
     LessonUpdateScheme, LessonFullScheme,
     MarkFullScheme, MarkCreateScheme, MarkUpdateScheme,
-    StudyGroupSubjectScheme, StudyGroupSubjectListScheme,
+    StudyGroupSubjectScheme, StudyGroupSubjectDetailScheme, StudyGroupSubjectListScheme,
 
 )
 from app.api.permissions.users import is_pupil_permission, is_teacher_permission
-from app.api.dependencies.lessons import get_mark, get_lesson
-from app.models import Mark, Lesson
+from app.api.dependencies.lessons import get_mark, get_lesson, get_study_group_subject
+from app.models import Mark, Lesson, StudyGroupSubject, Pupil
 
 
 router = APIRouter(prefix="/lessons")
@@ -58,6 +59,29 @@ async def get_teaching_classes(request: Request):
     ]
 
 
+@router.get("/teacher/classes/detail/{study_group_subject_id}", response_model=StudyGroupSubjectDetailScheme)
+@is_teacher_permission
+async def get_teaching_class_detail(
+    request: Request,
+    study_group_subject: StudyGroupSubject = Depends(get_study_group_subject)
+):
+    lessons = await Lesson.get_by_study_group_subject(study_group_subject)
+    marks = []
+    for lesson in lessons:
+        marks.extend(lesson.marks)
+    return {
+        **study_group_subject.as_dict(),
+        "study_group": {
+            **study_group_subject.study_group.as_dict(),
+            "class_": study_group_subject.study_group.class_.as_dict() if study_group_subject.study_group.class_ is not None else None,
+            "subclass": study_group_subject.study_group.subclass.as_dict() if study_group_subject.study_group.subclass is not None else None
+        },
+        "subject": study_group_subject.subject,
+        "lessons": lessons,
+        "marks": marks,
+        "pupils": await Pupil.filter(study_group=study_group_subject.study_group_id)
+    }
+
 
 @router.get("/teacher/lessons/{lesson_id}")
 @is_teacher_permission
@@ -96,7 +120,12 @@ async def create_mark(
         request: Request,
         mark_data: MarkCreateScheme = Body()
 ):
-    return await mark_data.create(**mark_data.model_dump())
+    if not Lesson.filter(study_group_subject__teacher=request.user).exists():
+        return JSONResponse(
+            {"detail": "Вы не ведете этот урок у данного класса."},
+            status_code=400
+        )
+    return await Mark.create(**mark_data.model_dump())
 
 
 @router.patch("/marks/{mark_id}")

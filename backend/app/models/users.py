@@ -41,6 +41,7 @@ class User(TortoiseModel):
     password = fields.CharField(max_length=255, default=generate_password)
     username = fields.CharField(max_length=255, unique=True, index=True)
     type = fields.CharField(max_length=100)
+    # avatar = fields.CharField(max_length=255, null=True)
 
     def __str__(self) -> str:
         return f"{self.father_name} {self.first_name} {self.father_name}"
@@ -73,7 +74,6 @@ class User(TortoiseModel):
         if password is None:
             password = generate_password()
         try:
-            print(first_name, last_name, father_name, username, email, password, type)
             new_user = await cls.create(
                 first_name=first_name,
                 last_name=last_name,
